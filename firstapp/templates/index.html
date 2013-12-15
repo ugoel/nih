@@ -1,0 +1,87 @@
+<html>
+	<head>
+		<title>
+			First Application
+		</title>
+		<link rel="stylesheet" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css" />
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+ 		<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+
+		<script>
+				var availableTags = [
+		"List project in 2013",
+		"List project in 2012",
+		"List Yester project"
+		];
+		$(function() {
+
+		$( "#tags" ).autocomplete({
+		source: availableTags
+		});
+		});
+		</script>		
+		<script>
+			function submitQuery() {
+				
+		        $.ajax({
+		            type: "get",
+		            url: "http://localhost:8000/firstapp/testing",
+		            data: {'param1':$('#tags').val()},
+		            datatype:"script",
+		            async: false,
+		            success: function(response) {
+		            	// alert("success"+response[0]);
+		            	if(availableTags.indexOf($('#tags').val()) == -1)	
+		            		availableTags.push($('#tags').val());
+		            	
+		            	res = "<center><br><br><br><br><br><table border='1' width='80%'><th>Results</th></tr>";
+		            	if(response == null) {
+		            		res += "<tr><td>No data found</td></tr></table>";
+		            		$('#result').html(res);
+		            		return;
+		            	}
+		            	for(var i=0; i<response.length; i++) {
+		            		res += "<tr><td>"+response[i]+"</td></tr>";
+		            	}
+		            	res += "</table><center>";
+		            	
+		            	$('#result').html(res);
+		            	
+			            // response is string, convert it to json and apply conditions.
+			            var json_obj= eval('(' + response + ')');//$.parseJSON("'"+response+"'");
+			            if (json_obj.type == 'Error'){
+			              alert(json_obj.msg);
+			            }
+			            else {
+			              alert(json_obj.msg);
+			            }// else closed
+		            }, // success closed
+		            error:function(xhr,err)
+		            {
+		            	alert("error");
+		                alert("Error connecting to server, please contact system administator.");
+		            }
+		        })//ajax closed				
+				
+				return true;
+			}			
+		</script>		
+	</head>
+	<body>
+
+</div>
+		<center><h2>NIH Reporter Search</h2></center>
+		<hr><br><br><br>
+		<table width="100%" border='0'>			
+			<tr align='center'>
+				<td>
+					<input id="tags" size="40%"><input type='button' value='Search' onclick="return submitQuery()"/>
+				</td>
+			</tr>				
+		</table>
+		<div id='result' width='100%'></div>
+		
+		
+		
+	</body>
+</html>
